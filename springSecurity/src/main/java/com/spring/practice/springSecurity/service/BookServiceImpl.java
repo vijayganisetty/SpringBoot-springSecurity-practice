@@ -1,9 +1,15 @@
 package com.spring.practice.springSecurity.service;
 
 import com.spring.practice.springSecurity.DTO.BookDto;
+import com.spring.practice.springSecurity.DTO.UserDTO;
+import com.spring.practice.springSecurity.advice.ResourceNotFoundException;
 import com.spring.practice.springSecurity.entity.BookEntity;
 import com.spring.practice.springSecurity.repository.BookRepository;
+import jakarta.servlet.http.Cookie;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +19,7 @@ public class BookServiceImpl implements BookService{
 
     private final BookRepository bookRepository;
     private final ModelMapper mapper;
+    private static final Logger logger = LoggerFactory.getLogger(BookServiceImpl.class);
 
     public BookServiceImpl(BookRepository bookRepository, ModelMapper mapper) {
         this.bookRepository = bookRepository;
@@ -27,7 +34,12 @@ public class BookServiceImpl implements BookService{
     }
 
     public BookDto getBookById(Long id) {
-        BookEntity bookEntity = bookRepository.findById(id).orElseThrow();
+        UserDTO userDTO = (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        logger.info("Fetched by user {}", userDTO.toString());
+
+        BookEntity bookEntity = bookRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("No book found with id"+ id));
         return mapper.map(bookEntity, BookDto.class);
     }
 
