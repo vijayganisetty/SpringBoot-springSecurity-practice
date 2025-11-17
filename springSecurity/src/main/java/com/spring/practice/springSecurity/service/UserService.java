@@ -30,13 +30,13 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
         return userRepository.findByEmail(mail).orElseThrow(
-                () -> new RuntimeException("User with mail "+ mail + " not found")
+                () -> new BadCredentialsException("User with mail "+ mail + " not found")
         );
     }
 
     public UserDTO getUserByUserId(Long id){
         UserEntity userEntity = userRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("User with id "+ id + " not found")
+                () -> new BadCredentialsException("User with id "+ id + " not found")
         );
         return modelMapper.map(userEntity, UserDTO.class);
     }

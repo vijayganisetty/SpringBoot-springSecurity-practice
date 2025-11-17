@@ -2,6 +2,7 @@ package com.spring.practice.springSecurity.service;
 
 import com.spring.practice.springSecurity.DTO.BookDto;
 import com.spring.practice.springSecurity.DTO.UserDTO;
+import com.spring.practice.springSecurity.advice.ResourceNotFoundException;
 import com.spring.practice.springSecurity.entity.BookEntity;
 import com.spring.practice.springSecurity.repository.BookRepository;
 import jakarta.servlet.http.Cookie;
@@ -37,7 +38,8 @@ public class BookServiceImpl implements BookService{
 
         logger.info("Fetched by user {}", userDTO.toString());
 
-        BookEntity bookEntity = bookRepository.findById(id).orElseThrow();
+        BookEntity bookEntity = bookRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("No book found with id"+ id));
         return mapper.map(bookEntity, BookDto.class);
     }
 
