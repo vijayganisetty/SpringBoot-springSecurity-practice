@@ -1,6 +1,7 @@
 package com.spring.practice.springSecurity.filters;
 
 import com.spring.practice.springSecurity.DTO.UserDTO;
+import com.spring.practice.springSecurity.entity.UserEntity;
 import com.spring.practice.springSecurity.service.JwtService;
 import com.spring.practice.springSecurity.service.UserService;
 import jakarta.servlet.FilterChain;
@@ -51,9 +52,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         Long userId = jwtService.getUserIdFromToken(token);
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDTO userDTO = userService.getUserByUserId(userId);
+            UserEntity userEntity = userService.getUserByUserId(userId);
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(userDTO, null, null);
+                    new UsernamePasswordAuthenticationToken(userEntity, null, null);
 
             authenticationToken.setDetails(
                     new WebAuthenticationDetailsSource().buildDetails(request)

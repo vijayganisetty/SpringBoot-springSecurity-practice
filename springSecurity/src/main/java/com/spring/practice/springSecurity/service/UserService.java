@@ -34,11 +34,10 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    public UserDTO getUserByUserId(Long id){
-        UserEntity userEntity = userRepository.findById(id).orElseThrow(
+    public UserEntity getUserByUserId(Long id){
+        return userRepository.findById(id).orElseThrow(
                 () -> new BadCredentialsException("User with id "+ id + " not found")
         );
-        return modelMapper.map(userEntity, UserDTO.class);
     }
 
     public UserDTO signUp(SignUpDTO signUpDTO) {
