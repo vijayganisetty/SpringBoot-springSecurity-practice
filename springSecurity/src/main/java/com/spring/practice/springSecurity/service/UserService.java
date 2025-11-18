@@ -2,6 +2,7 @@ package com.spring.practice.springSecurity.service;
 
 import com.spring.practice.springSecurity.DTO.SignUpDTO;
 import com.spring.practice.springSecurity.DTO.UserDTO;
+import com.spring.practice.springSecurity.advice.ResourceNotFoundException;
 import com.spring.practice.springSecurity.entity.UserEntity;
 import com.spring.practice.springSecurity.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -34,10 +35,18 @@ public class UserService implements UserDetailsService {
         );
     }
 
+    public UserEntity getUserByMail(String mail){
+        return userRepository.findByEmail(mail).orElse(null);
+    }
+
     public UserEntity getUserByUserId(Long id){
         return userRepository.findById(id).orElseThrow(
                 () -> new BadCredentialsException("User with id "+ id + " not found")
         );
+    }
+
+    public UserEntity save(UserEntity userEntity){
+        return userRepository.save(userEntity);
     }
 
     public UserDTO signUp(SignUpDTO signUpDTO) {

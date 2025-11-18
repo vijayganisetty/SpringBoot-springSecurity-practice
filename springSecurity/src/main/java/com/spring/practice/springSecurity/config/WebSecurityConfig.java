@@ -2,6 +2,7 @@ package com.spring.practice.springSecurity.config;
 
 
 import com.spring.practice.springSecurity.filters.JwtAuthFilter;
+import com.spring.practice.springSecurity.handlers.Oauth2Successhandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,9 +17,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class WebSecurityConfig {
 
+    private final Oauth2Successhandler oauth2Successhandler;
     private final JwtAuthFilter jwtAuthFilter;
 
-    public WebSecurityConfig(JwtAuthFilter jwtAuthFilter) {
+    public WebSecurityConfig(Oauth2Successhandler oauth2Successhandler, JwtAuthFilter jwtAuthFilter) {
+        this.oauth2Successhandler = oauth2Successhandler;
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
@@ -26,12 +29,16 @@ public class WebSecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**","/home.html*").permitAll()
                         .anyRequest().authenticated())
                 .csrf(csrfConfig -> csrfConfig.disable())
                 .sessionManagement(sessionConfig ->
                         sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth2Config ->
+                        oauth2Config
+                                .failureUrl("/login?error=false")
+                                .successHandler(oauth2Successhandler));
         return httpSecurity.build();
     }
 
