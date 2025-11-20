@@ -15,7 +15,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "User")
+@Table(name = "user")
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserEntity implements UserDetails {
@@ -26,7 +26,7 @@ public class UserEntity implements UserDetails {
     private String name;
     @Column(unique = true)
     private String email;
-
+    private String plan ;
     private String password;
 
     @Override
