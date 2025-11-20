@@ -4,13 +4,18 @@ import com.spring.practice.springSecurity.DTO.LoginDto;
 import com.spring.practice.springSecurity.DTO.LoginResponseDto;
 import com.spring.practice.springSecurity.DTO.SignUpDTO;
 import com.spring.practice.springSecurity.DTO.UserDTO;
+import com.spring.practice.springSecurity.entity.UserEntity;
 import com.spring.practice.springSecurity.service.AuthService;
+import com.spring.practice.springSecurity.service.SessionService;
 import com.spring.practice.springSecurity.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,14 +25,17 @@ import java.util.Arrays;
 
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
 
     private final UserService userService;
     private final AuthService authService;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthController(UserService userService, AuthService authService) {
+    public AuthController(UserService userService, AuthService authService, AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.authService = authService;
+        this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/signup")
@@ -42,8 +50,19 @@ public class AuthController {
         Cookie cookie = new Cookie("RefreshToken", loginResponseDto.getRefreshToken());
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
-
         return ResponseEntity.ok(loginResponseDto);
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request){
+        request.getCookies();
+        String refreshToken = Arrays.stream(request.getCookies())
+                .filter(cookie -> "RefreshToken".equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(() -> new AuthenticationServiceException("Refresh token not found inside the cookies"));
+        log.info(refreshToken);
+        return authService.logout(refreshToken);
     }
 
     @PostMapping("/refresh")
