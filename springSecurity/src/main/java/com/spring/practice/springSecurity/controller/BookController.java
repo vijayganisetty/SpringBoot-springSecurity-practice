@@ -21,7 +21,7 @@ public class BookController {
         return bookService.getAllBooks();
     }
 
-    @PostMapping
+    @PostMapping("/add")
     void addNewBook(@RequestBody BookDto bookDto){
         bookService.addBook(bookDto);
     }
