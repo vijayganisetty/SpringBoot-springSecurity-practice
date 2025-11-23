@@ -1,12 +1,10 @@
 package com.spring.practice.springSecurity.service;
 
 import com.spring.practice.springSecurity.DTO.BookDto;
-import com.spring.practice.springSecurity.DTO.UserDTO;
 import com.spring.practice.springSecurity.advice.ResourceNotFoundException;
 import com.spring.practice.springSecurity.entity.BookEntity;
 import com.spring.practice.springSecurity.entity.UserEntity;
 import com.spring.practice.springSecurity.repository.BookRepository;
-import jakarta.servlet.http.Cookie;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
