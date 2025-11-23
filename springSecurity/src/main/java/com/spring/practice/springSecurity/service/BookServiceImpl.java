@@ -48,4 +48,15 @@ public class BookServiceImpl implements BookService{
          BookEntity bookEntity = mapper.map(bookDto, BookEntity.class);
          bookRepository.save(bookEntity);
     }
+
+    @Override
+    public BookDto deleteById(long id) {
+       BookEntity book = bookRepository.findById(id).orElseThrow(
+               () -> new ResourceNotFoundException("No book found with id"+id)
+       );
+       if(book!=null){
+           bookRepository.deleteById(id);
+       }
+       return mapper.map(book, BookDto.class);
+    }
 }
