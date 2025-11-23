@@ -1,6 +1,9 @@
 package com.spring.practice.springSecurity.DTO;
 
+import com.spring.practice.springSecurity.enums.Role;
 import lombok.Data;
+
+import java.util.Set;
 
 @Data
 public class UserDTO {
@@ -9,4 +12,5 @@ public class UserDTO {
     private String email;
     private String name;
     private String plan;
+    private Set<Role> roles;
 }

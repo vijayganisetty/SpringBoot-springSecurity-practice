@@ -18,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -43,7 +44,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         final String requestToken = request.getHeader("Authorization");
 
-        if (requestToken == null || !requestToken.startsWith("Bearer")) {
+        if (requestToken == null || !requestToken.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -54,7 +55,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserEntity userEntity = userService.getUserByUserId(userId);
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(userEntity, null, null);
+                    new UsernamePasswordAuthenticationToken(userEntity, null, userEntity.getAuthorities());
 
             authenticationToken.setDetails(
                     new WebAuthenticationDetailsSource().buildDetails(request)

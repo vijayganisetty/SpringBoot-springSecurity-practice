@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+
+import java.nio.file.AccessDeniedException;
 
 
 @RestControllerAdvice
@@ -32,4 +35,10 @@ public class GlobalExceptionhandler {
        APIError apiError = new APIError(exception.getLocalizedMessage(), HttpStatus.UNAUTHORIZED);
        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public  ResponseEntity<APIError> accessDeniedExp(AccessDeniedException exception){
+        APIError apiError = new APIError(exception.getLocalizedMessage(), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+    }
 }

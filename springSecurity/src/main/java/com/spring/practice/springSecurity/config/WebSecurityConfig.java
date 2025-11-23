@@ -3,6 +3,7 @@ package com.spring.practice.springSecurity.config;
 
 import com.spring.practice.springSecurity.filters.JwtAuthFilter;
 import com.spring.practice.springSecurity.handlers.Oauth2Successhandler;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,6 +13,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import static com.spring.practice.springSecurity.enums.Role.*;
 
 @Configuration
 @EnableWebSecurity
@@ -30,6 +33,7 @@ public class WebSecurityConfig {
         httpSecurity
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**","/home.html*").permitAll()
+                        .requestMatchers( "/books/add").hasAnyRole(CREATOR.name(),ADMIN.name())
                         .anyRequest().authenticated())
                 .csrf(csrfConfig -> csrfConfig.disable())
                 .sessionManagement(sessionConfig ->
