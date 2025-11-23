@@ -1,11 +1,13 @@
 package com.spring.practice.springSecurity.config;
 
 
+import com.spring.practice.springSecurity.enums.Permission;
 import com.spring.practice.springSecurity.filters.JwtAuthFilter;
 import com.spring.practice.springSecurity.handlers.Oauth2Successhandler;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.spring.practice.springSecurity.enums.Permission.BOOK_DELETE;
 import static com.spring.practice.springSecurity.enums.Role.*;
 
 @Configuration
@@ -33,16 +36,18 @@ public class WebSecurityConfig {
         httpSecurity
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**","/home.html*").permitAll()
-                        .requestMatchers( "/books/add").hasAnyRole(CREATOR.name(),ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/books/add").hasAnyRole(CREATOR.name(),ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/books/").hasAnyRole(CREATOR.name(),ADMIN.name(),USER.name())
+                        .requestMatchers( HttpMethod.DELETE,"/books/**").hasAuthority(BOOK_DELETE.name())
                         .anyRequest().authenticated())
                 .csrf(csrfConfig -> csrfConfig.disable())
                 .sessionManagement(sessionConfig ->
                         sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login(oauth2Config ->
-                        oauth2Config
-                                .failureUrl("/login?error=false")
-                                .successHandler(oauth2Successhandler));
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+//                .oauth2Login(oauth2Config ->
+//                        oauth2Config
+//                                .failureUrl("/login?error=false")
+//                                .successHandler(oauth2Successhandler));
         return httpSecurity.build();
     }
 
